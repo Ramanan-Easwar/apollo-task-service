@@ -7,7 +7,7 @@
   - ``` {db.password} ```
   - ``` {app.port} ```
 
- - ### Datbase schema
+ - ### Table details
 
 ```                                          
    Column    |            Type             | Collation | Nullable |                Default                
