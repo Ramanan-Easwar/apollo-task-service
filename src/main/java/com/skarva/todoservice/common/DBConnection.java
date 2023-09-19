@@ -11,7 +11,7 @@ import java.sql.DriverManager;
 @Component
 public class DBConnection {
 
-    // TODO: make this into a connection pool and extract out as config class 
+    // TODO: make this into a connection pool and extract out as config class
     @Value("${db.password}")
     String pwd;
     Logger LOG = LoggerFactory.getLogger(DBConnection.class);
