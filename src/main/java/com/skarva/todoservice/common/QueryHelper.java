@@ -3,6 +3,7 @@ package com.skarva.todoservice.common;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.UUID;
 
 public class QueryHelper {
 
@@ -36,5 +37,9 @@ public class QueryHelper {
                 throw new RuntimeException("Could not close connection: " + e);
             }
         }
+    }
+
+    public static String getTaskUUID(String name) {
+        return UUID.fromString(name).toString();
     }
 }

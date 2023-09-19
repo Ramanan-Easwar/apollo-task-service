@@ -2,7 +2,7 @@ package com.skarva.todoservice.common;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.sql.Connection;
@@ -10,17 +10,21 @@ import java.sql.DriverManager;
 
 @Component
 public class DBConnection {
+    DbConfig dbConfig;
 
-    // TODO: make this into a connection pool and extract out as config class
-    @Value("${db.password}")
-    String pwd;
+    @Autowired
+    public DBConnection(DbConfig dbConfig) {
+        this.dbConfig = dbConfig;
+    }
     Logger LOG = LoggerFactory.getLogger(DBConnection.class);
     public Connection getConnection() {
         Connection connection = null;
 
         try {
-            connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/skarva",
-                    "skarva", pwd);
+            String url = "jdbc:postgresql://" + dbConfig.getEnv() + ":" + dbConfig.getPort() +
+                    "/" + dbConfig.getUsername();
+            connection = DriverManager.getConnection(url,
+                    dbConfig.getUsername(), dbConfig.getPassword());
             LOG.info("db call!!!! {}", connection.getClientInfo());
             return connection;
         } catch (Exception e) {

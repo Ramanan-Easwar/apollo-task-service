@@ -1,7 +1,6 @@
 package com.skarva.todoservice.service.task;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.skarva.todoservice.model.Task;
 import com.skarva.todoservice.model.TaskType;
 import org.slf4j.Logger;
@@ -17,16 +16,17 @@ public class TaskService {
 
     Logger LOG = LoggerFactory.getLogger(TaskService.class);
     TaskDBDAO taskDBDAO;
+    Gson gsonHelper;
 
     @Autowired
-    public TaskService(TaskDBDAO taskDBDAO) {
+    public TaskService(TaskDBDAO taskDBDAO, Gson gsonHelper) {
         this.taskDBDAO = taskDBDAO;
+        this.gsonHelper = gsonHelper;
     }
 
     public String createTask(String taskJson) {
-        Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
         LOG.error("obj from {}", taskJson);
-        Task task = gson.fromJson(taskJson, Task.class);
+        Task task = gsonHelper.fromJson(taskJson, Task.class);
         task.setCreated(new Timestamp(System.currentTimeMillis()));
         task.setType(TaskType.INCOMPLETE.type);
         task = taskDBDAO.createTask(task);
@@ -34,7 +34,7 @@ public class TaskService {
             LOG.error("Could not create the task!!");
             return null;
         }
-        return gson.toJson(task);
+        return gsonHelper.toJson(task);
     }
 
     public String completeStatus(long id) {
@@ -61,13 +61,12 @@ public class TaskService {
     }
 
     public String getTask(Long id) {
-        Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
         LOG.error("obj from {}", id);
         Task task = taskDBDAO.returnTask(id);
         if(task == null) {
             LOG.error("Could not fetch the task!! {}", id);
             return null;
         }
-        return gson.toJson(task);
+        return gsonHelper.toJson(task);
     }
 }
