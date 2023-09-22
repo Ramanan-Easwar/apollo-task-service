@@ -1,6 +1,7 @@
 package com.skarva.todoservice.service.task;
 
 import com.google.gson.Gson;
+import com.skarva.todoservice.common.QueryHelper;
 import com.skarva.todoservice.model.Task;
 import com.skarva.todoservice.model.TaskType;
 import org.slf4j.Logger;
@@ -29,6 +30,7 @@ public class TaskService {
         Task task = gsonHelper.fromJson(taskJson, Task.class);
         task.setCreated(new Timestamp(System.currentTimeMillis()));
         task.setType(TaskType.INCOMPLETE.type);
+        task.setTaskUUID(QueryHelper.generateUUID(task.getTaskName() + task.getTaskId()));
         task = taskDBDAO.createTask(task);
         if(task == null) {
             LOG.error("Could not create the task!!");
@@ -37,9 +39,9 @@ public class TaskService {
         return gsonHelper.toJson(task);
     }
 
-    public String completeStatus(long id) {
-        LOG.info("obj from {}", id);
-        String taskName = taskDBDAO.completeTask(id);
+    public String completeStatus(String uuid) {
+        LOG.info("obj from {}", uuid);
+        String taskName = taskDBDAO.completeTask(uuid);
         if(taskName == null) {
             LOG.error("Could not create the task!!");
             return null;
@@ -60,13 +62,14 @@ public class TaskService {
         return taskDBDAO.returnAllTasksWithCondition(TaskType.INCOMPLETE.type);
     }
 
-    public String getTask(Long id) {
-        LOG.error("obj from {}", id);
-        Task task = taskDBDAO.returnTask(id);
+    public String getTask(String uuid) {
+        Task task = taskDBDAO.returnTask(uuid);
         if(task == null) {
-            LOG.error("Could not fetch the task!! {}", id);
+            LOG.error("Could not fetch the task!! {}", uuid);
             return null;
         }
+
         return gsonHelper.toJson(task);
     }
+
 }

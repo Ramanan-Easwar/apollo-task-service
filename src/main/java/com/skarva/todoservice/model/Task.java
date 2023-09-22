@@ -14,6 +14,7 @@ public class Task {
     private String type;
     private Timestamp created;
     private Timestamp updated;
+    private String taskUUID;
 
     public Task(Builder builder) {
         this.taskId = builder.taskId;
@@ -22,6 +23,7 @@ public class Task {
         this.created = builder.created;
         this.updated = builder.updated;
         this.type = builder.type;
+        this.taskUUID = builder.taskUUID;
     }
 
     public static class Builder {
@@ -31,6 +33,8 @@ public class Task {
         private Timestamp created;
         private Timestamp updated;
         private String type;
+
+        private String taskUUID;
 
         public Builder setTaskId(Long taskId) {
             this.taskId = taskId;
@@ -55,6 +59,11 @@ public class Task {
 
         public Builder setType(String type) {
             this.type = type;
+            return this;
+        }
+
+        public Builder taskUUID(String taskUUID) {
+            this.taskUUID = taskUUID;
             return this;
         }
         public Task build() {
