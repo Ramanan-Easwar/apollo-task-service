@@ -1,5 +1,7 @@
 package com.skarva.todoservice.common;
 
+import com.fasterxml.uuid.Generators;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -39,7 +41,8 @@ public class QueryHelper {
         }
     }
 
-    public static String getTaskUUID(String name) {
-        return UUID.fromString(name).toString();
+    public static String generateUUID(String toUUIString) {
+        UUID uuid = Generators.nameBasedGenerator().generate(toUUIString);
+        return uuid.toString();
     }
 }

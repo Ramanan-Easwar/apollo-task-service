@@ -43,10 +43,10 @@ public class TaskRestController {
         else
             return new ResponseEntity<>("Failed. Please retry creation!!", HttpStatus.BAD_REQUEST);
     }
-// curl -X PATCH "localhost:8080/task/7/complete"
-    @PatchMapping(value = "/task/{id}/complete", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<String> completeTask(@PathVariable("id") Long taskId) {
-        String name = taskService.completeStatus(taskId);
+// curl -X PATCH "localhost:8080/task/{uuid}/complete"
+    @PatchMapping(value = "/task/{uuid}/complete", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<String> completeTask(@PathVariable("uuid") String uuid) {
+        String name = taskService.completeStatus(uuid);
         if(name != null)
             return new ResponseEntity<>("Successfully completed " + name, HttpStatus.OK);
         else
@@ -63,13 +63,12 @@ public class TaskRestController {
         return new ResponseEntity<>(taskService.getIncompleteTasks(), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/task/{id}")
-    public ResponseEntity<String> getTask(@PathVariable Long id) {
-        String task = taskService.getTask(id);
+    @GetMapping(value = "/task/{uuid}")
+    public ResponseEntity<String> getTask(@PathVariable String uuid) {
+        String task = taskService.getTask(uuid);
         if(task != null)
             return new ResponseEntity<>(task, HttpStatus.OK);
         else
             return new ResponseEntity<>("Could not find object", HttpStatus.BAD_REQUEST);
     }
-
 }

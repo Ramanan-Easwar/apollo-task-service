@@ -16,9 +16,6 @@ public class TaskServiceTest {
     TaskDBDAO taskDBDAO;
     Gson gsonHelper;
     TaskService taskService;
-
-    Task task;
-
     String taskString;
     @BeforeEach
     public void init() {
