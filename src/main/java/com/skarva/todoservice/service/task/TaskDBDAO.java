@@ -21,8 +21,8 @@ public class TaskDBDAO {
     }
 
     public Task createTask(Task task) {
-        String CREATE_TASK = "INSERT INTO task (task_name, task_status, created, type, task_uuid) " +
-                "VALUES(?,?,?,?,?)" +
+        String CREATE_TASK = "INSERT INTO task (task_name, task_status, created, type, task_uuid, user_alias) " +
+                "VALUES(?,?,?,?,?,?)" +
                 "RETURNING task_id;";
         PreparedStatement preparedStatement = null;
         Connection connection = null;
@@ -34,8 +34,8 @@ public class TaskDBDAO {
             preparedStatement.setTimestamp(3, task.getCreated());
             preparedStatement.setString(4, task.getType());
             preparedStatement.setString(5, task.getTaskUUID());
+            preparedStatement.setString(6, task.getUserAlias());
             ResultSet rs = QueryHelper.executeQuery(preparedStatement);
-            System.out.println(rs);
             if(rs.next()) {
                 return new Task.Builder().setTaskId(rs.getLong(1))
                         .setTaskName(task.getTaskName())
@@ -68,6 +68,32 @@ public class TaskDBDAO {
                         .setUpdated(rs.getTimestamp(5))
                         .setType(rs.getString(6))
                         .taskUUID(rs.getString(7))
+                        .build());
+            }
+            return tasks;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public List<Task> returnAllTasksByUserAlias(String userAlias) {
+        List<Task> tasks = new ArrayList<>();
+        String GET_ALL_TASKS = "SELECT task_id, task_name, task_status, created, updated, type, " +
+                "task_uuid, user_alias FROM task where user_alias = ?;";
+        ResultSet rs;
+        try(
+                Connection connection = dbConnection.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(GET_ALL_TASKS)) {
+            preparedStatement.setString(1, userAlias);
+            rs = preparedStatement.executeQuery();
+            while(rs.next()) {
+                tasks.add(new Task.Builder().setTaskId(rs.getLong(1))
+                        .setTaskName(rs.getString(2))
+                        .setTaskStatus(rs.getString(3))
+                        .setCreated(rs.getTimestamp(4))
+                        .setUpdated(rs.getTimestamp(5))
+                        .setType(rs.getString(6))
+                        .taskUUID(rs.getString(7))
+                        .userAlias(rs.getString(8))
                         .build());
             }
             return tasks;
@@ -140,9 +166,7 @@ public class TaskDBDAO {
             preparedStatement.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
             preparedStatement.setString(4, uuid);
             ResultSet rs = QueryHelper.executeQuery(preparedStatement);
-            System.out.println(rs);
             if(rs.next()) {
-                System.out.println("updated: " + rs.getString(1));
                 return rs.getString(1);
             }
             return null;

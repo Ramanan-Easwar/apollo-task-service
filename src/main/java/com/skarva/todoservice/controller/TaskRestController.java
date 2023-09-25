@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -36,7 +37,6 @@ public class TaskRestController {
     consumes = {MediaType.APPLICATION_JSON_VALUE},
     produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<String> create(@RequestBody String taskJson) {
-        System.out.println(taskJson);
         String response = taskService.createTask(taskJson);
         if(response != null)
             return new ResponseEntity<>(response, HttpStatus.OK);
@@ -70,5 +70,35 @@ public class TaskRestController {
             return new ResponseEntity<>(task, HttpStatus.OK);
         else
             return new ResponseEntity<>("Could not find object", HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping(value = "/users/{user_id}/tasks/all")
+    public ResponseEntity<List<Task>> getTaskByUser(@PathVariable("user_id") String userUuid) {
+        List<Task> tasks = taskService.getAllTasksByUser(userUuid);
+        if(tasks.isEmpty())
+            return new ResponseEntity<>(Collections.emptyList(), HttpStatus.OK);
+        else
+            return new ResponseEntity<>(tasks, HttpStatus.OK);
+    }
+
+
+    @PutMapping(value = "/users/task/{uuid}/complete", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<String> completeTaskByUser(@PathVariable("uuid") String uuid) {
+        String name = taskService.completeStatus(uuid);
+        if(name != null)
+            return new ResponseEntity<>("Successfully completed " + name, HttpStatus.OK);
+        else
+            return new ResponseEntity<>("Failed. Please retry completion!!", HttpStatus.BAD_REQUEST);
+    }
+    @PostMapping(value="/users/{user_id}/task/submit",
+            consumes = {MediaType.APPLICATION_JSON_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<String> createByUser(@RequestBody String taskJson,
+                                               @PathVariable("user_id") String userAlias) {
+        String response = taskService.createTaskByUser(taskJson, userAlias);
+        if(response != null)
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        else
+            return new ResponseEntity<>("Failed. Please retry creation!!", HttpStatus.BAD_REQUEST);
     }
 }

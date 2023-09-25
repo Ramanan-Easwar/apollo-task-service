@@ -39,6 +39,22 @@ public class TaskService {
         return gsonHelper.toJson(task);
     }
 
+
+    public String createTaskByUser(String taskJson, String userAlias) {
+
+        Task task = gsonHelper.fromJson(taskJson, Task.class);
+        task.setUserAlias(userAlias);
+        task.setCreated(new Timestamp(System.currentTimeMillis()));
+        task.setType(TaskType.INCOMPLETE.type);
+        task.setTaskUUID(QueryHelper.generateUUID(task.getTaskName() + task.getTaskId()));
+        task = taskDBDAO.createTask(task);
+        if(task == null) {
+            LOG.error("unable to create task!!");
+            return null;
+        }
+        return gsonHelper.toJson(task);
+    }
+
     public String completeStatus(String uuid) {
         LOG.info("obj from {}", uuid);
         String taskName = taskDBDAO.completeTask(uuid);
@@ -47,6 +63,11 @@ public class TaskService {
             return null;
         }
         return taskName;
+    }
+
+
+    public List<Task> getAllTasksByUser(String userUuid) {
+        return taskDBDAO.returnAllTasksByUserAlias(userUuid);
     }
 
 

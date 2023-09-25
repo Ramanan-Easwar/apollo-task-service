@@ -15,6 +15,7 @@ public class Task {
     private Timestamp created;
     private Timestamp updated;
     private String taskUUID;
+    private String userAlias;
 
     public Task(Builder builder) {
         this.taskId = builder.taskId;
@@ -24,6 +25,7 @@ public class Task {
         this.updated = builder.updated;
         this.type = builder.type;
         this.taskUUID = builder.taskUUID;
+        this.userAlias = builder.userAlias;
     }
 
     public static class Builder {
@@ -35,6 +37,8 @@ public class Task {
         private String type;
 
         private String taskUUID;
+
+        private String userAlias;
 
         public Builder setTaskId(Long taskId) {
             this.taskId = taskId;
@@ -64,6 +68,11 @@ public class Task {
 
         public Builder taskUUID(String taskUUID) {
             this.taskUUID = taskUUID;
+            return this;
+        }
+
+        public Builder userAlias(String userAlias) {
+            this.userAlias = userAlias;
             return this;
         }
         public Task build() {
